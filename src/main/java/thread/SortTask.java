@@ -14,7 +14,7 @@ public class SortTask extends RecursiveAction
     /**
      * 需要排序的数组
      */
-    private final long[] array;
+    private final String[] array;
 
     /**
      * 起始位置
@@ -40,7 +40,7 @@ public class SortTask extends RecursiveAction
         }
         else
         {
-            int pivot = partition(array, start, end);
+            int pivot = partition(stringToLong(array), start, end);
             SortTask left = null;
             SortTask right = null;
             if (start < pivot - 1)
@@ -61,7 +61,21 @@ public class SortTask extends RecursiveAction
             }
         }
     }
-
+    public static long[] stringToLong(String stringArray[]) {
+        if (stringArray == null || stringArray.length < 1) {
+            return null;
+        }
+        long longArray[] = new long[stringArray.length];
+        for (int i = 0; i < longArray.length; i++) {
+            try {
+                longArray[i] = Long.valueOf(stringArray[i]);
+            } catch (NumberFormatException e) {
+                longArray[i] = 0;
+                continue;
+            }
+        }
+        return longArray;
+    }
     /**
      * 获取当前值所在区域
      *
@@ -118,14 +132,14 @@ public class SortTask extends RecursiveAction
         return i;
     }
 
-    public SortTask(long[] array, int start, int end)
+    public SortTask(String[] array, int start, int end)
     {
         this.array = array;
         this.start = start;
         this.end = end;
     }
 
-    public SortTask(long[] array)
+    public SortTask(String[] array)
     {
         this.array = array;
         this.start = 0;

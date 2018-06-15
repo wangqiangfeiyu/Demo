@@ -21,17 +21,17 @@ public class Bootstrap
     /**
      * 排序前的数组
      */
-    private static long[] ARRAY = null;
+    private static String[] ARRAY = null;
 
     public static void main(String[] args)
     {
-        System.out.println("Hello World !");
+        System.out.println("welcome...start!");
 
         // 获取文件行数
         int lines = getFileLines();
 
         // 设置排序前和排序后的数组大小
-        ARRAY = new long[lines];
+        ARRAY = new String[lines];
 
         // 读取文件写入到BEFORE_ARRAY中
         readFile();
@@ -52,12 +52,11 @@ public class Bootstrap
     {
         long beginTime = System.currentTimeMillis();
 
-        String filename = Bootstrap.class.getResource("/msisdn.txt").getFile();
-        File readFile = new File(filename);
+        File file = new File("in.txt");
 
         int index = 0;
         try (BufferedReader br =
-                 new BufferedReader(new InputStreamReader(new FileInputStream(readFile), CHARSETNAME));)
+                 new BufferedReader(new InputStreamReader(new FileInputStream(file), CHARSETNAME));)
         {
             String line;
             while ((line = br.readLine()) != null)
@@ -83,8 +82,7 @@ public class Bootstrap
     {
         long beginTime = System.currentTimeMillis();
 
-        String filename = Bootstrap.class.getResource("/msisdn.txt").getFile();
-        File readFile = new File(filename);
+        File readFile = new File("in.txt");
 
         int index = 0;
         try (BufferedReader br =
@@ -93,7 +91,7 @@ public class Bootstrap
             String line;
             while ((line = br.readLine()) != null)
             {
-                ARRAY[index++] = Long.valueOf(line);
+                ARRAY[index++] = String.valueOf(line);
             }
         }
         catch (Exception e)
@@ -111,19 +109,13 @@ public class Bootstrap
     private static void writeFile()
     {
         long beginTime = System.currentTimeMillis();
-
-        String filename = Bootstrap.class.getResource("/sortFile.txt").getFile();
-        File sortFile = new File(filename);
+        File sortFile = new File("out.txt");
 
         try (
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(sortFile), CHARSETNAME)))
         {
             for (int i = 0; i < ARRAY.length; i++)
             {
-                if (ARRAY[i] == 0)
-                {
-                    continue;
-                }
 
                 bw.write(String.valueOf(ARRAY[i]));
                 bw.newLine();
