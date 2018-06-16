@@ -29,28 +29,26 @@ public class SortTask extends RecursiveAction
     /**
      * 是否需要多线程排序的游标
      */
-    private static final int THRESHOLD = 100000;
+    private static final int THRESHOLD = 4;
 
     @Override
     protected void compute()
     {
         if (end - start < THRESHOLD)
         {
+            System.out.println("array sort....");
             Arrays.sort(array, start, end + 1);
         }
         else
         {
-            int pivot = partition(stringToLong(array), start, end);
+           System.out.println("多线程forkJoin启动..." + Thread.currentThread().getName());
+
+            int middle = (start + end) / 2;
+
             SortTask left = null;
             SortTask right = null;
-            if (start < pivot - 1)
-            {
-                left = new SortTask(array, start, pivot - 1);
-            }
-            if (pivot + 1 < end)
-            {
-                right = new SortTask(array, pivot + 1, end);
-            }
+            left = new SortTask(array, start, middle);
+            right = new SortTask(array, middle, end);
             if (left != null)
             {
                 left.fork();
@@ -61,7 +59,7 @@ public class SortTask extends RecursiveAction
             }
         }
     }
-    public static long[] stringToLong(String stringArray[]) {
+ /*    public static long[] stringToLong(String stringArray[]) {
         if (stringArray == null || stringArray.length < 1) {
             return null;
         }
@@ -76,14 +74,14 @@ public class SortTask extends RecursiveAction
         }
         return longArray;
     }
-    /**
+   *//**
      * 获取当前值所在区域
      *
      * @param array 数组
      * @param start 起始位置
      * @param end 结束位置
      * @return 下标
-     */
+     *//*
     private int partition(long[] array, int start, int end)
     {
         int i = start;
@@ -130,7 +128,7 @@ public class SortTask extends RecursiveAction
         }
         array[i] = pivot;
         return i;
-    }
+    }*/
 
     public SortTask(String[] array, int start, int end)
     {
