@@ -1,6 +1,5 @@
 package thread;
 
-import java.util.Arrays;
 import java.util.concurrent.RecursiveAction;
 
 /**
@@ -11,136 +10,54 @@ import java.util.concurrent.RecursiveAction;
 
 public class SortTask extends RecursiveAction
 {
-    /**
-     * 需要排序的数组
-     */
-    private final String[] array;
+    private static final long serialVersionUID = -1738015707066879398L;
+    public final String[] words;
+    final int lo;
+    final int hi;
 
-    /**
-     * 起始位置
-     */
-    private final int start;
+    public SortTask(String[] array) {
+        this.words = array;
+        this.lo = 0;
+        this.hi = array.length - 1;
+    }
 
-    /**
-     * 其实位置
-     */
-    private final int end;
-
-    /**
-     * 是否需要多线程排序的游标
-     */
-    private static final int THRESHOLD = 4;
+    public SortTask(String[] array, int lo, int hi) {
+        this.words = array;
+        this.lo = lo;
+        this.hi = hi;
+    }
 
     @Override
-    protected void compute()
-    {
-        if (end - start < THRESHOLD)
-        {
-            System.out.println("array sort....");
-            Arrays.sort(array, start, end + 1);
-        }
-        else
-        {
-           System.out.println("多线程forkJoin启动..." + Thread.currentThread().getName());
-
-            int middle = (start + end) / 2;
-
-            SortTask left = null;
-            SortTask right = null;
-            left = new SortTask(array, start, middle);
-            right = new SortTask(array, middle, end);
-            if (left != null)
-            {
-                left.fork();
-            }
-            if (right != null)
-            {
-                right.fork();
-            }
+    protected void compute() {
+        if (hi - lo > 0) {
+            int pivot = partition(words, lo, hi);
+            SortTask left = new SortTask(words, lo, pivot - 1);
+            SortTask right = new SortTask(words, pivot + 1, hi);
+            invokeAll(left, right);
         }
     }
- /*    public static long[] stringToLong(String stringArray[]) {
-        if (stringArray == null || stringArray.length < 1) {
-            return null;
-        }
-        long longArray[] = new long[stringArray.length];
-        for (int i = 0; i < longArray.length; i++) {
-            try {
-                longArray[i] = Long.valueOf(stringArray[i]);
-            } catch (NumberFormatException e) {
-                longArray[i] = 0;
-                continue;
-            }
-        }
-        return longArray;
-    }
-   *//**
-     * 获取当前值所在区域
-     *
-     * @param array 数组
-     * @param start 起始位置
-     * @param end 结束位置
-     * @return 下标
-     *//*
-    private int partition(long[] array, int start, int end)
-    {
-        int i = start;
-        int j = end;
-        if (j - i > 2)
-        {
-            if ((array[i] < array[j - i] && array[j - i] < array[j])
-                || (array[j] < array[j - i] && array[j - i] < array[i]))
-            {
-                long t = array[i];
-                array[i] = array[j - i];
-                array[j - i] = t;
-            }
-            else
-            {
-                if ((array[i] < array[j] && array[j] < array[j - i])
-                    || (array[j - i] < array[j] && array[j] < array[i]))
-                {
-                    long t = array[i];
-                    array[i] = array[j];
-                    array[j] = t;
-                }
-            }
-        }
-        long pivot = array[i];
-        while (i < j)
-        {
-            while (i < j && array[j] > pivot)
-            {
-                j--;
-            }
-            if (i < j)
-            {
-                array[i++] = array[j];
-            }
-            while (i < j && array[i] < pivot)
-            {
+
+    /**
+     * 对数组进行分区操作，并返回中间元素位置
+     */
+    private int partition(String[] array, int lo, int hi) {
+        String x = array[hi];
+        int i = lo - 1;
+        for (int j = lo; j < hi; j++) {
+            if (array[j].compareTo(x) <= 0) {
                 i++;
-            }
-            if (i < j)
-            {
-                array[j--] = array[i];
+                swap(array, i, j);
             }
         }
-        array[i] = pivot;
-        return i;
-    }*/
-
-    public SortTask(String[] array, int start, int end)
-    {
-        this.array = array;
-        this.start = start;
-        this.end = end;
+        swap(array, i + 1, hi);
+        return i + 1;
     }
 
-    public SortTask(String[] array)
-    {
-        this.array = array;
-        this.start = 0;
-        this.end = array.length - 1;
+    private void swap(String[] array, int i, int j) {
+        if (i != j) {
+            String temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
     }
 }

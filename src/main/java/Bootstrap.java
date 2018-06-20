@@ -1,8 +1,8 @@
 import thread.SortTask;
 
 import java.io.*;
+import java.util.Date;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 启动类
@@ -22,6 +22,8 @@ public class Bootstrap
      * 排序前的数组
      */
     private static String[] ARRAY = null;
+
+    private static final int THREADS = 12;
 
     public static void main(String[] args)
     {
@@ -51,8 +53,7 @@ public class Bootstrap
     private static int getFileLines()
     {
         long beginTime = System.currentTimeMillis();
-
-        File file = new File("in.txt");
+        File file = new File("D:\\IDE-WorkSpace\\DemoWq\\in.txt");
 
         int index = 0;
         try (BufferedReader br =
@@ -82,7 +83,7 @@ public class Bootstrap
     {
         long beginTime = System.currentTimeMillis();
 
-        File readFile = new File("in.txt");
+        File readFile = new File("D:\\IDE-WorkSpace\\DemoWq\\in.txt");
 
         int index = 0;
         try (BufferedReader br =
@@ -109,7 +110,7 @@ public class Bootstrap
     private static void writeFile()
     {
         long beginTime = System.currentTimeMillis();
-        File sortFile = new File("out.txt");
+        File sortFile = new File("D:\\IDE-WorkSpace\\DemoWq\\out.txt");
 
         try (
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(sortFile), CHARSETNAME)))
@@ -135,21 +136,12 @@ public class Bootstrap
      */
     private static void forkJoinSort()
     {
-        long beginTime = System.currentTimeMillis();
-
-        ForkJoinPool forkJoinPool = new ForkJoinPool();
-        forkJoinPool.submit(new SortTask(ARRAY, 0, ARRAY.length - 1));
-        forkJoinPool.shutdown();
-        try
-        {
-            forkJoinPool.awaitTermination(10000, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-
-        long endTime = System.currentTimeMillis();
-        System.out.println(String.format("sort file times = %s", (endTime - beginTime)));
+        Date start = new Date();
+        SortTask task = new SortTask(ARRAY);
+        ForkJoinPool forkJoinPool = new ForkJoinPool(THREADS);
+        forkJoinPool.invoke(task);
+        Date end = new Date();
+        long timeDiff = end.getTime() - start.getTime();
+        System.out.println("sort:" + timeDiff + "ms");
     }
 }
